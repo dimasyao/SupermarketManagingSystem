@@ -1,0 +1,78 @@
+﻿@page "/products"
+
+@inject NavigationManager NavigationManager
+
+@using UseCases.Interfaces
+@inject IViewProductsUseCase ViewProductsUseCase
+@inject IGetCategoryById GetCategoryById
+@inject IDeleteProductUseCase DeleteProductUseCase
+
+
+<h3>Products</h3>
+<br/>
+@if (_products != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product category</th>
+                <th>Product name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var product in _products)
+            {
+                <tr>
+                    <td>@GetCategoryById.Execute(product.CategoryId.Value)?.Name</td>
+                    <td>@product.Name</td>
+                    <td>@Math.Round(product.Price.Value, 2)</td>
+                    <td>@product.Quantity</td>
+                    <td><button type="button" class="btn btn-link" @onclick="() => OnClickEditProduct(product)">Edit</button></td>
+                    <td><button type="button" class="btn btn-link" @onclick="() => OnClickDeleteProduct(product.Id)">Delete</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<br/>
+<button type="button" @onclick="OnClickAddNewProduct">Add new</button>
+
+@code {
+    private IEnumerable<Product> _products;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        LoadProducts();
+    }
+
+    private void OnClickAddNewProduct()
+    {
+        NavigationManager.NavigateTo("/addproduct");
+
+        LoadProducts();
+    }
+
+    private void OnClickEditProduct(Product product)
+    {
+        NavigationManager.NavigateTo($"/editproduct/{product.Id}");
+    }
+
+    private void OnClickDeleteProduct(int id)
+    {
+        DeleteProductUseCase.Execute(id);
+
+        LoadProducts();
+    }
+
+    private void LoadProducts()
+    {
+        _products = ViewProductsUseCase.Execute().OrderBy(x => x.CategoryId);
+    }
+}

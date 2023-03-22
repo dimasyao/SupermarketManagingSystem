@@ -1,0 +1,31 @@
+﻿@page "/cashier_console"
+
+
+<h3>Cashier Console</h3>
+<br />
+
+<div class="row">
+    <div class="col-4">
+        <SelectProductForSellingComponent OnClickProductSelected="SelectProduct"></SelectProductForSellingComponent>
+        <SellProductComponent SelectedProduct="selectedProduct" OnProductSold="SellProduct"></SellProductComponent>
+    </div>
+    <div class="col">
+        
+    </div>
+</div>
+
+
+
+@code {
+    private Product selectedProduct;
+
+    private void SelectProduct(Product product)
+    {
+        selectedProduct = product;
+    }
+
+    private void SellProduct(Product product)
+    {
+        
+    }
+}

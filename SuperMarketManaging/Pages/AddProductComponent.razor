@@ -1,0 +1,73 @@
+﻿@page "/addproduct"
+
+@inject NavigationManager NavigationManager
+@inject UseCases.Interfaces.IAddProductUseCase AddProductUseCase
+@inject UseCases.Interfaces.IViewCategoriesUseCase ViewCategoriesUseCase
+@inject UseCases.Interfaces.IGetCategoryById GetCategoryById
+
+<h3>Add Product</h3>
+
+<br />
+
+@if (_product != null)
+{
+    <EditForm Model="_product" OnValidSubmit="OnValidSumit">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <ValidationSummary></ValidationSummary>
+
+        <div class="input-text">
+            <label for="name">Name</label>
+            <InputText id="name" @bind-Value="_product.Name" class="form-control"></InputText>
+        </div>
+
+        <div class="input-text">
+            <label for="category">Category</label>
+            <select id="category" @bind="_product.CategoryId" class="form-control">
+                <option selected></option>
+                @foreach(var category in _categories)
+                {
+                    <option value="@category.Id">@category.Name</option>
+                }
+            </select>
+        </div>
+
+        <div class="input-text">
+            <label for="price">Price</label>
+            <InputNumber id="price" @bind-Value="_product.Price" @bind-Value:format="F2" class="form-control"></InputNumber>
+        </div>
+
+        <div class="input-text">
+            <label for="quantity">Quantity</label>
+            <InputNumber id="quantity" @bind-Value="_product.Quantity" class="form-control"></InputNumber>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-primary" @onclick="OnCancel">Cancel</button>
+
+    </EditForm>
+}
+
+@code {
+
+    private List<Category> _categories;
+    private Product _product;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _product = new Product();
+        _categories = ViewCategoriesUseCase.Execute().ToList();
+    }
+
+    private void OnValidSumit()
+    {
+        AddProductUseCase.Execute(_product);
+        NavigationManager.NavigateTo("/products");
+    }
+
+    private void OnCancel()
+    {
+        NavigationManager.NavigateTo("/products");
+    }
+}
